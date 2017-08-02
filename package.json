@@ -1,0 +1,14 @@
+{
+  "name": "agris-nested-sets-tree",
+  "version": "1.0.0",
+  "description": "class for search in nested sets tree",
+  "main": "tree.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "agris",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^4.17.4"
+  }
+}
