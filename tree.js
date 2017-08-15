@@ -1,4 +1,4 @@
-const _ = require('lodash');
+const sortBy = require('lodash.sortby');
 
 class NestedSetsError extends Error {
 	constructor(message) {
@@ -190,7 +190,7 @@ module.exports = class NestedSets {
 		}
 		/*если включена опция создания индексов - создаем индексы для тех полей для которых они не переданы извне */
 		if (createIndexes && !indexes.id) {
-			this._indexes.id = _.sortBy(data, [this._idKey]);
+			this._indexes.id = sortBy(data, [this._idKey]);
 		}
 		/* пишем в объект переданные индексы */
 		if (indexes.id) {
@@ -235,7 +235,7 @@ module.exports = class NestedSets {
 		if(!element) {
 			throw new NestedSetsError('element not found!');
 		}
-		this.results = _.sortBy(results, [this._lftKey]);
+		this.results = sortBy(results, [this._lftKey]);
 
 		return this; 
 	}
@@ -286,7 +286,7 @@ module.exports = class NestedSets {
 			}			
 		});
 
-		this.results = _.sortBy(results, [this._lftKey]);
+		this.results = sortBy(results, [this._lftKey]);
 		return this;  
 	}
 
