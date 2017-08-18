@@ -229,12 +229,38 @@ module.exports = function () {
 				throw new NestedSetsError('id must be a integer!');
 			}
 		}
+		//получение категорий первого уровня 
+
+	}, {
+		key: "getRootCats",
+		value: function getRootCats() {
+			var _this3 = this;
+
+			this.results = sortBy(this._tree.filter(function (el) {
+				return el[_this3._lvlKey] === 1;
+			}), this._lftKey);
+			return this;
+		}
+	}, {
+		key: "getRootEl",
+		value: function getRootEl() {
+			var results = [];
+			for (var i = 0; i < this._tree.length; i++) {
+				var el = this._tree[i];
+				if (el[this._lvlKey] !== 0) continue;
+				results.push(el);
+				break;
+			}
+			this.results = results;
+			return this;
+		}
+
 		//получение прямых потомков узла 
 
 	}, {
 		key: "getChilds",
 		value: function getChilds(el, hide) {
-			var _this3 = this;
+			var _this4 = this;
 
 			var element = (typeof el === "undefined" ? "undefined" : _typeof(el)) === "object" ? el : undefined;
 			var id = void 0;
@@ -248,15 +274,15 @@ module.exports = function () {
 
 			var results = [];
 			this._tree.forEach(function (el) {
-				if (!hide && el[_this3._parentKey] === id) {
+				if (!hide && el[_this4._parentKey] === id) {
 					results.push(el);
 				}
 
-				if (hide && !el[_this3._hideKey] && el[_this3._parentKey] === id) {
+				if (hide && !el[_this4._hideKey] && el[_this4._parentKey] === id) {
 					results.push(el);
 				}
 
-				if (el[_this3._idKey] === id) {
+				if (el[_this4._idKey] === id) {
 					element = el;
 				}
 			});
@@ -296,7 +322,7 @@ module.exports = function () {
 	}, {
 		key: "getAllChilds",
 		value: function getAllChilds(el, hide) {
-			var _this4 = this;
+			var _this5 = this;
 
 			var element = (typeof el === "undefined" ? "undefined" : _typeof(el)) === "object" ? el : this._getElById(el);
 			if ((typeof element === "undefined" ? "undefined" : _typeof(element)) === "object") {
@@ -306,11 +332,11 @@ module.exports = function () {
 			var rgt = element[this._rgtKey];
 			var results = [];
 			this._tree.forEach(function (el) {
-				if (!hide && el[_this4._lftKey] >= lft && el[_this4._rgtKey] <= rgt) {
+				if (!hide && el[_this5._lftKey] >= lft && el[_this5._rgtKey] <= rgt) {
 					results.push(el);
 				}
 
-				if (hide && !el[_this4._hideKey] && el[_this4._lftKey] >= lft && el[_this4._rgtKey] <= rgt) {
+				if (hide && !el[_this5._hideKey] && el[_this5._lftKey] >= lft && el[_this5._rgtKey] <= rgt) {
 					results.push(el);
 				}
 			});
@@ -321,12 +347,12 @@ module.exports = function () {
 	}, {
 		key: "getDepth",
 		value: function getDepth() {
-			var _this5 = this;
+			var _this6 = this;
 
 			var depth = 0;
 			this._tree.forEach(function (el) {
-				if (el[_this5._lvlKey] > depth) {
-					depth = el[_this5._lvlKey];
+				if (el[_this6._lvlKey] > depth) {
+					depth = el[_this6._lvlKey];
 				}
 			});
 			return depth;
@@ -353,7 +379,7 @@ module.exports = function () {
 	}, {
 		key: "getAllParents",
 		value: function getAllParents(el, hide) {
-			var _this6 = this;
+			var _this7 = this;
 
 			var element = (typeof el === "undefined" ? "undefined" : _typeof(el)) === "object" ? el : this._getElById(el);
 			if ((typeof element === "undefined" ? "undefined" : _typeof(element)) === "object") {
@@ -363,11 +389,11 @@ module.exports = function () {
 			var rgt = element[this._rgtKey];
 			var results = [];
 			this._tree.forEach(function (el) {
-				if (!hide && el[_this6._lftKey] <= lft && el[_this6._rgtKey] >= rgt) {
+				if (!hide && el[_this7._lftKey] <= lft && el[_this7._rgtKey] >= rgt) {
 					results.push(el);
 				}
 
-				if (hide && !el[_this6._hideKey] && el[_this6._lftKey] <= lft && el[_this6._rgtKey] > rgt) {
+				if (hide && !el[_this7._hideKey] && el[_this7._lftKey] <= lft && el[_this7._rgtKey] > rgt) {
 					results.push(el);
 				}
 			});
@@ -377,10 +403,10 @@ module.exports = function () {
 	}, {
 		key: "ids",
 		get: function get() {
-			var _this7 = this;
+			var _this8 = this;
 
 			return this.results.map(function (el) {
-				return el[_this7._idKey];
+				return el[_this8._idKey];
 			});
 		}
 	}]);

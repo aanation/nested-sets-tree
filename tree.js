@@ -205,6 +205,26 @@ module.exports = class NestedSets {
 			throw new NestedSetsError('id must be a integer!');
 		}
 	}
+	//получение категорий первого уровня 
+	getRootCats() {
+		this.results = sortBy(this._tree.filter(el => {
+			return el[this._lvlKey] === 1; 
+		}), this._lftKey); 
+		return this; 
+	}
+
+	getRootEl() {
+		let results = []; 
+		for (let i = 0; i < this._tree.length; i++) {
+			let el = this._tree[i];
+			if (el[this._lvlKey] !== 0) continue; 
+			results.push(el); 
+			break;
+		} 
+		this.results = results;
+		return this; 
+	}
+
 	//получение прямых потомков узла 
 	getChilds(el, hide) {
 		let element = typeof el === "object" ? el : undefined; 
