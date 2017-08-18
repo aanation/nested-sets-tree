@@ -371,8 +371,7 @@ module.exports = function () {
 					results.push(el);
 				}
 			});
-
-			this.results = results;
+			this.results = sortBy(results, this._lvlKey);
 			return this;
 		}
 	}, {

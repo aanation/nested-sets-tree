@@ -335,8 +335,7 @@ module.exports = class NestedSets {
 				results.push(el);
 			}			
 		});
-
-		this.results = results;  
+		this.results = sortBy(results, this._lvlKey);
 		return this; 
 	}
 }
