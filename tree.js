@@ -172,6 +172,7 @@ module.exports = class NestedSets {
 		this._indexes = {
 			id: []
 		};
+		return this; 
 	}
 
 	get ids() {
@@ -180,7 +181,10 @@ module.exports = class NestedSets {
 		}); 
 	} 
 
-	loadTree(data, {validate=false, createIndexes=false}, indexes={}) {
+	loadTree(data, options={}, indexes={}) {
+		const validate = options.validate !== undefined ? !!options.validate : false;
+		const createIndexes = options.createIndexes !== undefined ? !!options.createIndexes : false; 
+
 		/* Проверяем дерево и индексы на соответствие структуре NestedSets если включена опция валидации */
 		if (validate) {
 			validateTree.call(this, data); 
@@ -197,6 +201,8 @@ module.exports = class NestedSets {
 			this._indexes.id = indexes.id;
 		}		
 		this._tree = data; 
+
+		return this; 
 
 	}
 
@@ -259,7 +265,7 @@ module.exports = class NestedSets {
 
 		return this; 
 	}
-
+	//приватный метод для получения эллемента по его id
 	_getElById(id) {
 		this._validateId(id); 
 		let element; 
@@ -275,6 +281,17 @@ module.exports = class NestedSets {
 			throw new NestedSetsError('element not found!');
 		}
 		return element; 
+	}
+	//публичный метод для получения элемента по его id
+	getElById(id) {
+		try {
+			this.results = [this._getElById(id)];
+		} catch(err) {
+			if (err instanceof NestedSetsError) {
+				this.results = []; 
+			}
+		}
+
 	}
 
 	checkKeys(el) {

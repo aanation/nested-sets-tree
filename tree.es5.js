@@ -194,16 +194,17 @@ module.exports = function () {
 		this._indexes = {
 			id: []
 		};
+		return this;
 	}
 
 	_createClass(NestedSets, [{
 		key: "loadTree",
-		value: function loadTree(data, _ref2) {
-			var _ref2$validate = _ref2.validate,
-			    validate = _ref2$validate === undefined ? false : _ref2$validate,
-			    _ref2$createIndexes = _ref2.createIndexes,
-			    createIndexes = _ref2$createIndexes === undefined ? false : _ref2$createIndexes;
+		value: function loadTree(data) {
+			var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 			var indexes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+			var validate = options.validate !== undefined ? !!options.validate : false;
+			var createIndexes = options.createIndexes !== undefined ? !!options.createIndexes : false;
 
 			/* Проверяем дерево и индексы на соответствие структуре NestedSets если включена опция валидации */
 			if (validate) {
@@ -221,6 +222,8 @@ module.exports = function () {
 				this._indexes.id = indexes.id;
 			}
 			this._tree = data;
+
+			return this;
 		}
 	}, {
 		key: "_validateId",
@@ -294,6 +297,8 @@ module.exports = function () {
 
 			return this;
 		}
+		//приватный метод для получения эллемента по его id
+
 	}, {
 		key: "_getElById",
 		value: function _getElById(id) {
@@ -311,6 +316,19 @@ module.exports = function () {
 				throw new NestedSetsError('element not found!');
 			}
 			return element;
+		}
+		//публичный метод для получения элемента по его id
+
+	}, {
+		key: "getElById",
+		value: function getElById(id) {
+			try {
+				this.results = [this._getElById(id)];
+			} catch (err) {
+				if (err instanceof NestedSetsError) {
+					this.results = [];
+				}
+			}
 		}
 	}, {
 		key: "checkKeys",
