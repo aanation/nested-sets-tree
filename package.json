@@ -1,6 +1,6 @@
 {
   "name": "agris-nested-sets-tree",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "class for search in nested sets tree",
   "main": "tree.es5.js",
   "scripts": {

@@ -232,14 +232,12 @@ module.exports = class NestedSets {
 	}
 
 	isChild(parent, child) {
-		return 
-			child[this._lftKey] > parent[this._lftKey] && 
+		return child[this._lftKey] > parent[this._lftKey] && 
 			child[this._rgtKey] < parent[this._rgtKey];
 	}
 
 	static isChild(parent, child, {lft, rgt}) {
-		return 
-			child[lft] > parent[lft] && 
+		return child[lft] > parent[lft] && 
 			child[rgt] < parent[rgt];		
 	}
 

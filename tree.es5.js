@@ -260,8 +260,7 @@ module.exports = function () {
 	}, {
 		key: "isChild",
 		value: function isChild(parent, child) {
-			return;
-			child[this._lftKey] > parent[this._lftKey] && child[this._rgtKey] < parent[this._rgtKey];
+			return child[this._lftKey] > parent[this._lftKey] && child[this._rgtKey] < parent[this._rgtKey];
 		}
 	}, {
 		key: "getChilds",
@@ -439,8 +438,7 @@ module.exports = function () {
 			var lft = _ref2.lft,
 			    rgt = _ref2.rgt;
 
-			return;
-			child[lft] > parent[lft] && child[rgt] < parent[rgt];
+			return child[lft] > parent[lft] && child[rgt] < parent[rgt];
 		}
 	}]);
 
