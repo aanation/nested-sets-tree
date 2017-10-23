@@ -257,11 +257,16 @@ module.exports = function () {
 			this.results = results;
 			return this;
 		}
-
-		//получение прямых потомков узла 
-
+	}, {
+		key: "isChild",
+		value: function isChild(parent, child) {
+			return child[this._lftKey] > parent[this._lftKey] && child[this._rgtKey] < parent[this._rgtKey];
+		}
 	}, {
 		key: "getChilds",
+
+
+		//получение прямых потомков узла 
 		value: function getChilds(el, hide) {
 			var _this4 = this;
 
@@ -427,6 +432,14 @@ module.exports = function () {
 			return this.results.map(function (el) {
 				return el[_this8._idKey];
 			});
+		}
+	}], [{
+		key: "isChild",
+		value: function isChild(parent, child, _ref2) {
+			var lft = _ref2.lft,
+			    rgt = _ref2.rgt;
+
+			return child[lft] > parent[lft] && child[rgt] < parent[rgt];
 		}
 	}]);
 

@@ -231,6 +231,16 @@ module.exports = class NestedSets {
 		return this; 
 	}
 
+	isChild(parent, child) {
+		return child[this._lftKey] > parent[this._lftKey] && 
+			child[this._rgtKey] < parent[this._rgtKey];
+	}
+
+	static isChild(parent, child, {lft, rgt}) {
+		return child[lft] > parent[lft] && 
+			child[rgt] < parent[rgt];		
+	}
+
 	//получение прямых потомков узла 
 	getChilds(el, hide) {
 		let element = typeof el === "object" ? el : undefined; 
