@@ -329,6 +329,7 @@ module.exports = function () {
 					this.results = [];
 				}
 			}
+			return this;
 		}
 	}, {
 		key: "checkKeys",

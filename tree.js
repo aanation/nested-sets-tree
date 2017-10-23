@@ -291,6 +291,7 @@ module.exports = class NestedSets {
 				this.results = []; 
 			}
 		}
+		return this; 
 
 	}
 
