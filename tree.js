@@ -254,6 +254,12 @@ module.exports = class NestedSets {
 		}
 		
 		let results = []; 
+		//если у элемента правый ключ минус левый равен единицы - значит у него точно нет потомков 
+		//и проходка по дереву не имеет смысла 
+		if (typeof el === "object" && ((el[this._rgtKey] - el[this._lftKey]) === 1)) {
+			this.results = [];
+			return this;  
+		}
 		this._tree.forEach(el => {
 			if (!hide && el[this._parentKey] === id) {
 				results.push(el);
@@ -321,6 +327,13 @@ module.exports = class NestedSets {
 		if (typeof element === "object") {
 			this.checkKeys(element); 
 		}
+		//если у элемента правый ключ минус левый равен единицы - значит у него точно нет потомков 
+		//и проходка по дереву не имеет смысла 
+		if (typeof el === "object" && ((el[this._rgtKey] - el[this._lftKey]) === 1)) {
+			this.results = [];
+			return this;  
+		}
+
 		let lft = element[this._lftKey];
 		let rgt = element[this._rgtKey];
 		let results = [];

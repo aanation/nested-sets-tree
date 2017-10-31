@@ -281,6 +281,12 @@ module.exports = function () {
 			}
 
 			var results = [];
+			//если у элемента правый ключ минус левый равен единицы - значит у него точно нет потомков 
+			//и проходка по дереву не имеет смысла 
+			if ((typeof el === "undefined" ? "undefined" : _typeof(el)) === "object" && el[this._rgtKey] - el[this._lftKey] === 1) {
+				this.results = [];
+				return this;
+			}
 			this._tree.forEach(function (el) {
 				if (!hide && el[_this4._parentKey] === id) {
 					results.push(el);
@@ -352,6 +358,13 @@ module.exports = function () {
 			if ((typeof element === "undefined" ? "undefined" : _typeof(element)) === "object") {
 				this.checkKeys(element);
 			}
+			//если у элемента правый ключ минус левый равен единицы - значит у него точно нет потомков 
+			//и проходка по дереву не имеет смысла 
+			if ((typeof el === "undefined" ? "undefined" : _typeof(el)) === "object" && el[this._rgtKey] - el[this._lftKey] === 1) {
+				this.results = [];
+				return this;
+			}
+
 			var lft = element[this._lftKey];
 			var rgt = element[this._rgtKey];
 			var results = [];
