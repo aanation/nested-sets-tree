@@ -343,6 +343,18 @@ module.exports = function () {
 			return this;
 		}
 	}, {
+		key: "isValidId",
+		value: function isValidId(id) {
+			try {
+				var el = this._getElById(id);
+				return true;
+			} catch (err) {
+				if (err instanceof NestedSetsError) {
+					return false;
+				}
+			}
+		}
+	}, {
 		key: "checkKeys",
 		value: function checkKeys(el) {
 			if (typeof el[this._lftKey] !== "number" || !Number.isInteger(el[this._lftKey]) || typeof el[this._rgtKey] !== "number" || !Number.isInteger(el[this._rgtKey]) || typeof el[this._lvlKey] !== "number" || !Number.isInteger(el[this._lvlKey]) || typeof el[this._idKey] !== "number" || !Number.isInteger(el[this._idKey]) || typeof el[this._parentKey] !== "number" || !Number.isInteger(el[this._parentKey])) {

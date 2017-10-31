@@ -311,6 +311,17 @@ module.exports = class NestedSets {
 
 	}
 
+	isValidId(id) {
+		try {
+			let el = this._getElById(id);
+			return true; 
+		} catch(err) {
+			if (err instanceof NestedSetsError) {
+				return false; 
+			}
+		}
+	}
+
 	checkKeys(el) {
 		if (typeof el[this._lftKey]    !== "number" || !Number.isInteger(el[this._lftKey]) ||
 		 	typeof el[this._rgtKey]    !== "number" || !Number.isInteger(el[this._rgtKey]) ||
