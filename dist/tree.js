@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const _ = require("lodash");
 const errors_1 = require("./errors");
+const binarysearch_1 = require("./binarysearch");
 ;
 ;
 function getMinElByField(collection, field) {
@@ -47,6 +48,7 @@ function getMaxElByField(collection, field) {
 }
 ;
 ;
+;
 module.exports = class NestedSets {
     constructor(keys) {
         this._tree = [];
@@ -59,7 +61,7 @@ module.exports = class NestedSets {
             hide: 'hide'
         };
         this._indexes = {
-            id: []
+            id: [],
         };
         this.results = [];
         this._keys = Object.assign(this._keys, keys);
@@ -73,6 +75,23 @@ module.exports = class NestedSets {
     get ids() {
         return _.map(this.results, this._keys.id);
     }
+    _getElById(id) {
+        if (this._indexes.id && this._indexes.id.length) {
+            let el = binarysearch_1.default(this._indexes.id, id, this._keys.id);
+            let p;
+            return el;
+        }
+        else {
+            let searchObj = {};
+            searchObj[this._keys.id] = id;
+            return _.find(this._tree, searchObj);
+        }
+    }
+    getElById(id) {
+        let element = this._getElById(id);
+        this.results = element ? [element] : [];
+        return this;
+    }
     validate() {
         NestedSets.validateTree(this._tree, this._keys);
     }
@@ -81,6 +100,7 @@ module.exports = class NestedSets {
         tree.forEach(el => {
             if ((typeof el[keys.id] !== 'number' &&
                 typeof el[keys.id] !== 'string') ||
+                typeof el[keys.hide] !== 'boolean' ||
                 typeof el[keys.lvl] !== 'number' ||
                 (typeof el[keys.parentId] !== 'number' &&
                     typeof el[keys.parentId] !== 'string') ||
@@ -143,7 +163,10 @@ module.exports = class NestedSets {
         if (validate && indexes && indexes.id) {
             NestedSets.validateTree(indexes.id, this._keys);
         }
-        if (createIndexes && !indexes.id) {
+        if (indexes && indexes.id.length) {
+            this._indexes.id = indexes.id;
+        }
+        if (createIndexes && (!indexes || !indexes.id || !indexes.id.length)) {
             this._indexes.id = _.sortBy(data, [this._keys.id]);
         }
         return this;
@@ -170,6 +193,50 @@ module.exports = class NestedSets {
     static isChild(parent, child, { lft, rgt }) {
         return child[lft] > parent[lft] &&
             child[rgt] < parent[rgt];
+    }
+    isChild(parent, child) {
+        return child[this._keys.lft] > parent[this._keys.lft] &&
+            child[this._keys.rgt] < parent[this._keys.rgt];
+    }
+    checkKeys(el) {
+        let keys = this._keys;
+        if ((typeof el[keys.id] !== 'number' &&
+            typeof el[keys.id] !== 'string') ||
+            typeof el[keys.lvl] !== 'number' ||
+            typeof el[keys.hide] !== 'boolean' ||
+            (typeof el[keys.parentId] !== 'number' &&
+                typeof el[keys.parentId] !== 'string') ||
+            typeof el[keys.lft] !== 'number' ||
+            typeof el[keys.rgt] !== 'number') {
+            throw new errors_1.NestedSetsValidationError('keys error!');
+        }
+    }
+    getChilds(el, hide) {
+        let id;
+        let element;
+        if (typeof el === "string" || typeof el === "number") {
+            id = el;
+            element = this._getElById(id);
+        }
+        else {
+            id = el[this._keys.id];
+            element = el;
+        }
+        let results = [];
+        if ((el[this._keys.rgt] - el[this._keys.lft] === 1)) {
+            this.results = [];
+            return this;
+        }
+        this._tree.forEach(el => {
+            if (!hide && el[this._keys.parentId] === id) {
+                results.push(el);
+            }
+            if (hide && !el[this._keys.hide] && el[this._keys.parentId] === id) {
+                results.push(el);
+            }
+        });
+        this.results = _.sortBy(results, [this._keys.lft]);
+        return this;
     }
 };
 //# sourceMappingURL=tree.js.map

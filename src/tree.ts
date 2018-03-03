@@ -1,13 +1,14 @@
 import * as _ from 'lodash'; 
 import {NestedSetsError, NestedSetsValidationError} from "./errors";
-import { type } from 'os';
-import { debug } from 'util';
+import binarySearch from './binarysearch';
 
-interface CollectionEl {
+
+
+export interface CollectionEl {
     [key:string]: number; 
 };
 
-interface ExtremumResult {
+export interface ExtremumResult {
     index: number, 
     value: number,
     el: CollectionEl
@@ -60,7 +61,7 @@ function getMaxElByField(collection:CollectionEl[], field:string) :ExtremumResul
     return max; 
 }; 
 
-interface Keys {
+export interface Keys {
     id?: string,
     lvl?: string, 
     parentId?: string,
@@ -69,7 +70,11 @@ interface Keys {
     hide?: string
 }; 
 
-type stringOrNumberType = number | string;
+export interface IndexedTree {
+    id?:CollectionEl[]
+};
+
+export type stringOrNumberType = number | string;
 
 module.exports = class NestedSets {
     private _tree: CollectionEl[] = [];
@@ -87,16 +92,33 @@ module.exports = class NestedSets {
     set keys(keys: Keys) {
         this._keys = keys;
     } 
-    private _indexes: {id:CollectionEl[]} = {
-        id: []
+    private _indexes:IndexedTree = {
+        id: [],
     };
     public results: CollectionEl[] = []; 
     get ids():stringOrNumberType[] {
         return _.map(this.results, this._keys.id);
     }
-
     constructor(keys: Keys) {
         this._keys = Object.assign(this._keys, keys); 
+    }
+
+    private _getElById(id: string|number):CollectionEl {
+        if (this._indexes.id && this._indexes.id.length) {
+            let el:CollectionEl = binarySearch(this._indexes.id, id, this._keys.id);
+            let p;
+            return el;
+        } else {
+            let searchObj = {};
+            searchObj[this._keys.id] = id;
+            return _.find(this._tree, searchObj); 
+        }
+    }
+
+    public getElById(id: string|number):NestedSets {
+        let element = this._getElById(id);
+        this.results = element ? [element] : [];
+        return this; 
     }
 
     public validate() {
@@ -109,6 +131,7 @@ module.exports = class NestedSets {
         tree.forEach(el => {
             if ((typeof el[keys.id]       !== 'number'  &&
                  typeof el[keys.id]       !== 'string') ||
+                 typeof el[keys.hide]     !== 'boolean' ||
                  typeof el[keys.lvl]      !== 'number'  ||
                 (typeof el[keys.parentId] !== 'number'  &&
                  typeof el[keys.parentId] !== 'string') ||
@@ -173,7 +196,7 @@ module.exports = class NestedSets {
 
     }
 
-    public loadTree(data: CollectionEl[], options?: {validate?:boolean, createIndexes?:boolean}, indexes?:{id:CollectionEl[]}) {
+    public loadTree(data: CollectionEl[], options?: {validate?:boolean, createIndexes?:boolean}, indexes?:IndexedTree) {
         this._tree = data; 
         options = options || {};
         const validate: boolean = options.validate !== undefined ? options.validate : false; 
@@ -187,7 +210,11 @@ module.exports = class NestedSets {
             NestedSets.validateTree(indexes.id, this._keys);
         }
 
-        if(createIndexes && !indexes.id) {
+        if (indexes && indexes.id.length) {
+            this._indexes.id = indexes.id;
+        }
+
+        if(createIndexes && (!indexes || !indexes.id || !indexes.id.length)) {
             this._indexes.id = _.sortBy(data, [this._keys.id]);
         }
 
@@ -224,11 +251,12 @@ module.exports = class NestedSets {
 			child[this._keys.rgt] < parent[this._keys.rgt];
     }
     
-	public checkKeys(el) :boolean {
+	public checkKeys(el) {
         let keys:Keys = this._keys; 
         if ((typeof el[keys.id]       !== 'number'  &&
              typeof el[keys.id]       !== 'string') ||
              typeof el[keys.lvl]      !== 'number'  ||
+             typeof el[keys.hide]     !== 'boolean' ||
             (typeof el[keys.parentId] !== 'number'  &&
              typeof el[keys.parentId] !== 'string') ||
              typeof el[keys.lft]      !== 'number'  ||
@@ -238,42 +266,40 @@ module.exports = class NestedSets {
         }
     }
     
-    public getChilds(el:stringOrNumberType|CollectionEl, hide:boolean):NestedSets {
-		let element:CollectionEl = typeof el === "object" ? el : undefined; 
-		let id:stringOrNumberType|CollectionEl; 
-		if (typeof element === "object") {
-			this.checkKeys(element); 
-			id = element[this._keys.id]; 
-		} else {
-			id = el; 
+    public getChilds(el:string|number|CollectionEl, hide:boolean):NestedSets {
+        let id:string|number; 
+        let element:CollectionEl; 
+        if (typeof el === "string" || typeof el === "number") {
+            id = el;
+            element = this._getElById(id);
+        } else {
+            id = el[this._keys.id]; 
+            element = el;
         }
+
 		let results:CollectionEl[] = []; 
 		//если у элемента правый ключ минус левый равен единицы - значит у него точно нет потомков 
 		//и проходка по дереву не имеет смысла 
-		if (typeof el === "object" && ((el[this._keys.rgt] - el[this._keys.lft]) === 1)) {
+		if ((el[this._keys.rgt] - el[this._keys.lft] === 1)) {
 			this.results = [];
 			return this;  
-		}
+        }
+        
 		this._tree.forEach(el => {
-			if (!hide && el[this._parentKey] === id) {
-				results.push(el);
-			}
+            //если исключать элементы нет нужды - проверяем parentKey
+            if (!hide && el[this._keys.parentId] === id) {
+                results.push(el);
+            }
 
-			if (hide && !el[this._hideKey] && el[this._parentKey] === id) {
+			if (hide && !el[this._keys.hide] && el[this._keys.parentId] === id) {
 				results.push(el); 
-			}
-
-			if (el[this._idKey] === id) {
-				element = el; 
 			}
 		});
 
-		if(!element) {
-			throw new NestedSetsError('element not found!');
-		}
-		this.results = sortBy(results, [this._lftKey]);
-
+		this.results = _.sortBy(results, [this._keys.lft]);
 		return this; 
-	}
+    }
+    
+
 
 };

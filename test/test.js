@@ -58,7 +58,8 @@ describe('loadTree', function() {
     let tree = new NestedSets({
         'id': 'category_id', 
         'parentId': 'parent_id', 
-        'lvl': 'depth'
+        'lvl': 'depth',
+        'hide': 'hide_category'
     });
 
     it('load tree without validation and indexes', function(){
@@ -84,7 +85,8 @@ describe('validateTree', function() {
     let tree = new NestedSets({
         'id': 'category_id', 
         'parentId': 'parent_id', 
-        'lvl': 'depth'
+        'lvl': 'depth',
+        'hide': 'hide_category'
     });
 
     it('correct validation tree', function() {
@@ -142,9 +144,20 @@ describe('get elements', function() {
     let tree = new NestedSets({
         'id': 'category_id', 
         'parentId': 'parent_id', 
-        'lvl': 'depth'
+        'lvl': 'depth',
+        'hide': 'hide_category'
     });
     tree.loadTree(treeData);
+
+    let treeWithIndexes = new NestedSets({
+        'id': 'category_id', 
+        'parentId': 'parent_id', 
+        'lvl': 'depth',
+        'hide': 'hide_category'
+    });
+    treeWithIndexes.loadTree(treeData, {
+        createIndexes: true
+    });
 
     it('get root element', function() {
         let [rootEl] = tree.getRootEl().results;  
@@ -159,7 +172,8 @@ describe('get elements', function() {
             "category_name": "Корень",
             "category_icon": null,
             "synonyms": "",
-            "hint": null
+            "hint": null,
+            "hide_category": false
         });
     }); 
 
@@ -180,7 +194,8 @@ describe('get elements', function() {
             "category_name": "Соль",
             "category_icon": null,
             "synonyms": "",
-            "hint": "<p>Минерал природного происхождения, его химическая формула NaCl. В измельчённом виде представляет собой бесцветные кристаллы. Имеет широкое применение, производится в разных видах: крупного и мелкого помола, чистая и с различными добавками и пр.</p>"
+            "hint": "<p>Минерал природного происхождения, его химическая формула NaCl. В измельчённом виде представляет собой бесцветные кристаллы. Имеет широкое применение, производится в разных видах: крупного и мелкого помола, чистая и с различными добавками и пр.</p>",
+            "hide_category": false
         }; 
 
         let child = {
@@ -194,7 +209,8 @@ describe('get elements', function() {
             "category_name": "Техническая",
             "category_icon": null,
             "synonyms": "",
-            "hint": "<p>Техническая соль имеет сероватый оттенок. Обычно имеет структуру, содержащую множество крупных частиц. Её особенно часто используют зимой для борьбы с гололёдом и снегом.</p>"
+            "hint": "<p>Техническая соль имеет сероватый оттенок. Обычно имеет структуру, содержащую множество крупных частиц. Её особенно часто используют зимой для борьбы с гололёдом и снегом.</p>",
+            "hide_category": false
         }; 
 
         let notChild = {
@@ -208,12 +224,131 @@ describe('get elements', function() {
             "category_name": "Ирга",
             "category_icon": null,
             "synonyms": "",
-            "hint": "<p>Ирга – плод невысокого кустарника. Ягода ирга обладает приятным вкусом, за свою сладость она даже получила прозвище «северный виноград». Плоды, фиолетового цвета, с налетом. Мякоть сочная, мягкая, ароматная. Созревают плоды в июле. Само растение имеет мощную систему корней, толстые ветки, достигает 3 метров в длину. Листья ирги темно зеленые, округлой или овальной формы, по краям с зубчиками, слегка опушенные сверху. Осенью краснеют. Цветы белые или кремовые, собранные в соцветие щиток. Цветет около 10 дней. Ирга не боится заморозков, может выдерживать морозы до -40 градусов. Дикая ирга произрастает в Крыму и на Кавказе. Культурные сорта произрастают в Сибири, на Урале, в Казахстане. Его используют как медоносное, декоративное плодовое растение.  </p>"
+            "hint": "<p>Ирга – плод невысокого кустарника. Ягода ирга обладает приятным вкусом, за свою сладость она даже получила прозвище «северный виноград». Плоды, фиолетового цвета, с налетом. Мякоть сочная, мягкая, ароматная. Созревают плоды в июле. Само растение имеет мощную систему корней, толстые ветки, достигает 3 метров в длину. Листья ирги темно зеленые, округлой или овальной формы, по краям с зубчиками, слегка опушенные сверху. Осенью краснеют. Цветы белые или кремовые, собранные в соцветие щиток. Цветет около 10 дней. Ирга не боится заморозков, может выдерживать морозы до -40 градусов. Дикая ирга произрастает в Крыму и на Кавказе. Культурные сорта произрастают в Сибири, на Урале, в Казахстане. Его используют как медоносное, декоративное плодовое растение.  </p>",
+            "hide_category": false
         }; 
 
         expect(NestedSets.isChild(parent, child, { lft: 'lft', rgt: 'rgt'})).to.be.true;
         expect(NestedSets.isChild(parent, notChild, { lft: 'lft', rgt: 'rgt'})).to.be.false;
     }); 
+
+    it('get child elements', function() {
+        let element = {
+            "category_id": 125,
+            "depth": 3,
+            "lft": 6,
+            "rgt": 17,
+            "parent_id": 60,
+            "required": 1,
+            "category_slug": "maslo-i-maslozhirovyye-produkty",
+            "category_name": "Масло и масложировые продукты",
+            "category_icon": null,
+            "synonyms": "Твёрдое масло, Мягкое масло, Топлёное масло, Бутербродное масло, Масло сливочное солёное, Несолёное масло, Крестьянское масло, Масляная паста,",
+            "hint": null,
+            "hide_category": false
+        }; 
+
+        let childs = [
+            {
+                "category_id": 137,
+                "depth": 4,
+                "lft": 7,
+                "rgt": 8,
+                "parent_id": 125,
+                "required": 1,
+                "category_slug": "maslo-slivochnoye",
+                "category_name": "Масло сливочное",
+                "category_icon": null,
+                "synonyms": "Масло топленое и молочный жир, Твёрдое масло, Мягкое масло, Топлёное масло, Бутербродное масло, Масло сливочное солёное, Несолёное масло, Крестьянское масло,",
+                "hint": "<p>Пищевой продукт, изготавливаемый сепарированием <wbr>или сбиванием сливок, полученных из  молока.</p>",
+                "hide_category": false
+            },
+            {
+                "category_id": 1471,
+                "depth": 4,
+                "lft": 9,
+                "rgt": 10,
+                "parent_id": 125,
+                "required": 1,
+                "category_slug": "maslyanaya-pasta",
+                "category_name": "Масляная паста",
+                "category_icon": null,
+                "synonyms": "",
+                "hint": "<p>Молочный продукт или молочный составной продукт на\r\n        эмульсионной жировой основе, в котором  массовая доля жира составляет от 39 до 49 процентов включительно и\r\n        который произведен из молока, молочных продуктов и (или)\r\n        побочных продуктов переработки молока путем использования\r\n        стабилизаторов с добавлением или без добавления немолочных\r\n        компонентов не в целях замены составных частей молока.</p>",
+                "hide_category": false
+            },
+            {
+                "category_id": 138,
+                "depth": 4,
+                "lft": 11,
+                "rgt": 12,
+                "parent_id": 125,
+                "required": 1,
+                "category_slug": "maslo-toplenoye-i-molochnyy-zhir",
+                "category_name": "Масло топлёное и молочный жир",
+                "category_icon": null,
+                "synonyms": "Масляная паста,",
+                "hint": "<p>Топленое масло – это продукт, получаемый в результате термического воздействия на сливочное. Под влиянием высокой температуры и в результате определенных манипуляций из продукта-основы удаляется молочная составная, вода и примеси. Правильно приготовленное топленое масло имеет янтарный цвет и легкий ореховый аромат. В отличие от сливочного, топленый продукт имеет больший срок годности.</p><p>Молочный жир, изготовляемый из молока и/или молочных продуктов удалением молочной плазмы, предназначенные для непосредственного употребления в пищу, кулинарных целей, при производстве рекомбинированных молочных продуктов и использования в других отраслях пищевой промышленности. Жирность не менее 99,8%.</p>",
+                "hide_category": false
+            }, 
+            {
+                "category_id": 139,
+                "depth": 4,
+                "lft": 13,
+                "rgt": 14,
+                "parent_id": 125,
+                "required": 1,
+                "category_slug": "spred",
+                "category_name": "Спред",
+                "category_icon": null,
+                "synonyms": "Топленая смесь,",
+                "hint": "<p>Эмульсионный жировой продукт с массовой долей общего жира не менее 39%, имеющий пластичную консистенцию, с температурой плавления жировой фазы не выше 36 °С, изготавливаемый из молочного жира, и (или) сливок, и (или) сливочного масла и натуральных и (или) модифицированных растительных масел или только из натуральных и (или) модифицированных растительных масел с добавлением или без добавления пищевых добавок и других ингредиентов, содержащий не более 8% массовой доли трансизомеров олеиновой кислоты в жире, выделенном из продукта (в пересчете на метилэлаидат). ГОСТ Р 52100-2003.</p>",
+                "hide_category": true
+            }, {
+                "category_id": 140,
+                "depth": 4,
+                "lft": 15,
+                "rgt": 16,
+                "parent_id": 125,
+                "required": 1,
+                "category_slug": "margarin",
+                "category_name": "Маргарин",
+                "category_icon": null,
+                "synonyms": "Жир, Кондитерский жир, Пищевой жир, ",
+                "hint": "<p>Эмульсионный жировой продукт с массовой долей жира не менее 20%, состоящий из немодифицированных и (или) модифицированных растительных масел с (или без) животными жирами, с (или без) жирами рыб и морских млекопитающих, воды с добавлением или без добавления молока и (или) продуктов его переработки, пищевых добавок и других пищевых ингредиентов.ГОСТ 32188-2013.</p>",
+                "hide_category": false
+            }
+        ];
+
+        expect(tree.getChilds(element).results).to.deep.equal(childs); //get childs by element object
+        expect(tree.getChilds(element['category_id']).results).to.deep.equal(childs); //get childs by id
+        //get childs by element exlude hided
+        expect(tree.getChilds(element, true).results).to.deep.equal(_.filter(childs, {
+            "hide_category": false
+        }));
+    });
+
+    it('get element by id', function() {
+        let element = {
+            "category_id": 806,
+            "depth": 3,
+            "lft": 2106,
+            "rgt": 2107,
+            "parent_id": 320,
+            "required": 1,
+            "category_slug": "akhimenes",
+            "category_name": "Ахименес",
+            "category_icon": null,
+            "synonyms": "",
+            "hint": null,
+            "hide_category": false
+        };
+
+        let el = tree.getElById(806).results;
+
+        expect(tree.getElById(806).results).to.deep.equal([element]);
+        expect(treeWithIndexes.getElById(806).results).to.deep.equal([element]);
+    });
 
 
 }); 
