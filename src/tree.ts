@@ -78,6 +78,12 @@ export type stringOrNumberType = number | string;
 
 module.exports = class NestedSets {
     private _tree: CollectionEl[] = [];
+    get all():CollectionEl[] {
+        return this._tree;
+    }
+    get allIds():stringOrNumberType[] {
+        return _.map(this._tree, this._keys.id);
+    }
     private _keys:Keys ={
         id: 'id',
         lvl: 'lvl',
@@ -265,22 +271,25 @@ module.exports = class NestedSets {
             throw new NestedSetsValidationError('keys error!'); 
         }
     }
-    
-    public getChilds(el:string|number|CollectionEl, hide:boolean):NestedSets {
-        let id:string|number; 
+
+    private _normalizeElement(el:stringOrNumberType|CollectionEl):CollectionEl {
         let element:CollectionEl; 
         if (typeof el === "string" || typeof el === "number") {
-            id = el;
-            element = this._getElById(id);
+            element = this._getElById(el);
         } else {
-            id = el[this._keys.id]; 
             element = el;
         }
-
+        if (!element) throw new NestedSetsError('incorrect element!');
+        return element; 
+    }
+    
+    public getChilds(el:stringOrNumberType|CollectionEl, hide:boolean):NestedSets {
+        let element:CollectionEl = this._normalizeElement(el); 
+        let id:stringOrNumberType = element[this._keys.id]; 
 		let results:CollectionEl[] = []; 
 		//если у элемента правый ключ минус левый равен единицы - значит у него точно нет потомков 
 		//и проходка по дереву не имеет смысла 
-		if ((el[this._keys.rgt] - el[this._keys.lft] === 1)) {
+		if ((element[this._keys.rgt] - element[this._keys.lft] === 1)) {
 			this.results = [];
 			return this;  
         }
@@ -290,7 +299,7 @@ module.exports = class NestedSets {
             if (!hide && el[this._keys.parentId] === id) {
                 results.push(el);
             }
-
+            //если исключать элементы есть необходимость, но данный элемент не отмечен флагом hide - включаем его в массив резудбьтатов
 			if (hide && !el[this._keys.hide] && el[this._keys.parentId] === id) {
 				results.push(el); 
 			}
@@ -299,6 +308,83 @@ module.exports = class NestedSets {
 		this.results = _.sortBy(results, [this._keys.lft]);
 		return this; 
     }
+
+    public isValidId(id:string|number):boolean {
+        let el:CollectionEl = this._getElById(id); 
+        return !!el;
+    }   
+
+    public getAllChilds(el:stringOrNumberType|CollectionEl, hide:boolean):NestedSets {
+        let element:CollectionEl = this._normalizeElement(el); 
+        let lft:number = element[this._keys.lft];
+        let rgt:number = element[this._keys.rgt]; 
+		let results:CollectionEl[] = []; 
+		//если у элемента правый ключ минус левый равен единицы - значит у него точно нет потомков 
+		//и проходка по дереву не имеет смысла 
+		if ((element[this._keys.rgt] - element[this._keys.lft] === 1)) {
+			this.results = [];
+			return this;  
+        }     
+
+        this._tree.forEach(el => {
+			if (!hide && el[this._keys.lft] >= lft && el[this._keys.rgt] <= rgt) {
+				results.push(el);
+			}
+			if (hide && !el[this._keys.hide] && el[this._keys.lft] >= lft && el[this._keys.rgt] <= rgt) {
+				results.push(el); 
+			}	            
+        }); 
+
+		this.results = _.sortBy(results, [this._keys.lft]);
+		return this; 
+    }
+
+    public getDepth():number {
+        let depth:number = 0; 
+        this._tree.forEach(el => {
+            if (el[this._keys.lvl] > depth) {
+				depth = el[this._keys.lvl];
+			}
+        });
+        return depth;
+    }
+
+    public getParent(el:stringOrNumberType|CollectionEl):NestedSets {
+        let element:CollectionEl = this._normalizeElement(el); 
+        let parentId:stringOrNumberType = element[this._keys.parentId];
+        let depth:number = element[this._keys.lvl];
+        let results:CollectionEl[] = [];
+
+        if (!depth) {
+            results = []; 
+        } else {
+            let parent:CollectionEl = this._getElById(parentId);
+            results.push(parent);
+        }
+        this.results = results;
+        return this;
+    }
+
+    public getAllParents(el:stringOrNumberType|CollectionEl, hide:boolean):NestedSets {
+        let element:CollectionEl = this._normalizeElement(el); 
+        let lft = element[this._keys.lft];
+        let rgt = element[this._keys.rgt]; 
+		let results:CollectionEl[] = []; 
+
+        this._tree.forEach(el => {
+			if (!hide && el[this._keys.lft] <= lft && el[this._keys.rgt] >= rgt) {
+				results.push(el);
+			}
+
+			if (hide && !el[this._keys.hide] && el[this._keys.lft] <= lft && el[this._keys.rgt] > rgt) {
+				results.push(el);
+			}			
+		});
+        this.results = _.sortBy(results, this._keys.lvl);
+        return this;
+    }; 
+
+
     
 
 

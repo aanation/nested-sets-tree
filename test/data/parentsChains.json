@@ -1,0 +1,132 @@
+[
+    [
+        {
+            "category_id": 1,
+            "depth": 0,
+            "lft": 1,
+            "rgt": 2664,
+            "parent_id": 0,
+            "required": 0,
+            "category_slug": "koren",
+            "category_name": "Корень",
+            "category_icon": null,
+            "synonyms": "",
+            "hint": null,
+            "hide_category": false
+        },
+        {
+            "category_id": 5,
+            "depth": 1,
+            "lft": 1042,
+            "rgt": 1249,
+            "parent_id": 1,
+            "required": 1,
+            "category_slug": "zhivyye-zhivotnyye-ptitsy-ryby",
+            "category_name": "Живые животные, птицы, рыбы",
+            "category_icon": "5-category-icon.png",
+            "synonyms": "",
+            "hint": null,
+            "hide_category": false
+        },
+        {
+            "category_id": 6,
+            "depth": 2,
+            "lft": 1119,
+            "rgt": 1144,
+            "parent_id": 5,
+            "required": 1,
+            "category_slug": "zhivyye-ptitsy",
+            "category_name": "Живые птицы",
+            "category_icon": null,
+            "synonyms": "",
+            "hint": null,
+            "hide_category": false
+        },
+        { 
+            "category_id": 87,
+            "depth": 3,
+            "lft": 1124,
+            "rgt": 1143,
+            "parent_id": 6,
+            "required": 1,
+            "category_slug": "sel-skokhozyaystvennyye-i-promyslovyye-ptitsy",
+            "category_name": "Сельскохозяйственные и промысловые птицы",
+            "category_icon": null,
+            "synonyms": "",
+            "hint": null,
+            "hide_category": false 
+        },
+        {
+            "category_id": 178,
+            "depth": 4,
+            "lft": 1137,
+            "rgt": 1138,
+            "parent_id": 87,
+            "required": 1,
+            "category_slug": "fazan",
+            "category_name": "Фазан",
+            "category_icon": null,
+            "synonyms": "",
+            "hint": null,
+            "hide_category": false
+        }
+    ],
+    [
+        {
+            "category_id": 1,
+            "depth": 0,
+            "lft": 1,
+            "rgt": 2664,
+            "parent_id": 0,
+            "required": 0,
+            "category_slug": "koren",
+            "category_name": "Корень",
+            "category_icon": null,
+            "synonyms": "",
+            "hint": null,
+            "hide_category": false
+        },              
+        {
+            "category_id": 32,
+            "depth": 1,
+            "lft": 1446,
+            "rgt": 1481,
+            "parent_id": 1,
+            "required": 1,
+            "category_slug": "pchelovodstvo-vse-chto-s-nim-svyazano",
+            "category_name": "Пчеловодство: всё, что с ним связано",
+            "category_icon": "32-category-icon.png",
+            "synonyms": "",
+            "hint": null,
+            "hide_category": false
+        },
+        {
+            "category_id": 93,
+            "depth": 2,
+            "lft": 1449,
+            "rgt": 1472,
+            "parent_id": 32,
+            "required": 1,
+            "category_slug": "produktsiya",
+            "category_name": "Продукция",
+            "category_icon": null,
+            "synonyms": "",
+            "hint": null,
+            "hide_category": false
+        },
+        {
+            "category_id": 281,
+            "depth": 3,
+            "lft": 1452,
+            "rgt": 1453,
+            "parent_id": 93,
+            "required": 1,
+            "category_slug": "vosk",
+            "category_name": "Воск",
+            "category_icon": null,
+            "synonyms": "",
+            "hint": "<p>Продукт жизнедеятельности пчёл, сложное органическое соединение. Зарегистрирован в качестве пищевой добавки Е-901. Пчелиный воск выделяется специальными железами медоносных пчёл, из него пчёлы строят соты. Представляет собой многокомпонентное твёрдое вещество от белого (с лёгким жёлтым оттенком) до жёлто-бурого цвета с характерным медовым запахом.</p>",
+            "hide_category": false
+        }
+    ]
+]

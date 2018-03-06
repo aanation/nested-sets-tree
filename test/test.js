@@ -53,6 +53,8 @@ describe('constructor', function() {
 
 const treeData = JSON.parse(fs.readFileSync(path.resolve('./test/data/tree.json'))); 
 const rootCategoriesData = JSON.parse(fs.readFileSync(path.resolve('./test/data/root.json')));
+const childsData = JSON.parse(fs.readFileSync(path.resolve('./test/data/childs.json')));
+const parentsChains = JSON.parse(fs.readFileSync(path.resolve('./test/data/parentsChains.json')));
 
 describe('loadTree', function() {
     let tree = new NestedSets({
@@ -344,11 +346,130 @@ describe('get elements', function() {
             "hide_category": false
         };
 
-        let el = tree.getElById(806).results;
-
         expect(tree.getElById(806).results).to.deep.equal([element]);
         expect(treeWithIndexes.getElById(806).results).to.deep.equal([element]);
     });
 
+    it('is valid id', function() {
+        //генерируем из дерева массив корректных и некорректных id и проверяем их на валидность 
+        let allIds = treeWithIndexes.allIds;
+        let endElement = Math.floor(allIds.length / 5);
+        let elementsIds = allIds.slice(0, endElement);
 
+        elementsIds.forEach(id => {tree
+            expect(treeWithIndexes.isValidId(id)).to.be.true; 
+        }); 
+        let maxId = Math.max(...allIds); 
+        let incorrectIds = [];
+        for (let i = maxId+1; i<maxId+100; i++) {
+            incorrectIds.push(i); 
+        }
+        incorrectIds.forEach(id => {
+            expect(treeWithIndexes.isValidId(id)).to.be.false;
+        }); 
+    });
+
+    it('check keys', function() {
+        let correctElement = {
+            "category_id": 806,
+            "depth": 3,
+            "lft": 2106,
+            "rgt": 2107,
+            "parent_id": 320,
+            "hide_category": false
+        };
+
+        let incorrectElement = {
+            "category_id": 806,
+            "depth": 3,
+            "lft": 2106,
+            "rgt": '234',
+            "parent_id": [2],
+            "hide_category": 'false'
+        };
+
+        tree.checkKeys(correctElement); 
+
+        let error; 
+        try {
+            tree.checkKeys(incorrectElement); 
+        } catch(err) {
+            error = err; 
+        } finally { 
+            assert.isOk(error && error.name === "NestedSetsValidationError", 'coorect validation');
+        }
+    });
+
+    it('get all childs', function() {
+        let el = {
+            "category_id": 6,
+            "depth": 2,
+            "lft": 1119,
+            "rgt": 1144,
+            "parent_id": 5,
+            "required": 1,
+            "category_slug": "zhivyye-ptitsy",
+            "category_name": "Живые птицы",
+            "category_icon": null,
+            "synonyms": "",
+            "hint": null,
+            "hide_category": false
+        }; 
+        let ch = tree.getAllChilds(el); 
+        expect(tree.getAllChilds(el).results).to.deep.equal(childsData);
+        expect(tree.getAllChilds(6).results).to.deep.equal(childsData);
+        expect(treeWithIndexes.getAllChilds(6).results).to.deep.equal(childsData);
+    });
+
+    it('get depth', function() {
+        expect(tree.getDepth()).to.be.equal(4);
+    });
+
+    it('get parent', function() {
+        let element = {
+            "category_id": 1370,
+            "depth": 4,
+            "lft": 1747,
+            "rgt": 1748,
+            "parent_id": 1350,
+            "required": 1,
+            "category_slug": "borona",
+            "category_name": "Борона",
+            "category_icon": null,
+            "synonyms": "",
+            "hint": "<p>Сельскохозяйственное орудие для обработки почвы. Боронование – поверхностная обработка почвы, проводимая с целью рыхления, выравнивания поверхности, заделки влаги, вычесывания и присыпания сорняков, заделки семян и удобрений, прореживания посевов. </p>",
+            "hide_category": false
+        };
+        let parent = {
+            "category_id": 1350,
+            "depth": 3,
+            "lft": 1742,
+            "rgt": 1781,
+            "parent_id": 1340,
+            "required": 1,
+            "category_slug": "pochvoobrabatyvayushchaya-tekhnika",
+            "category_name": "Почвообрабатывающая техника",
+            "category_icon": null,
+            "synonyms": "",
+            "hint": null,
+            "hide_category": false
+        }; 
+
+        expect(tree.getParent(element).results[0]).to.deep.equal(parent);
+        expect(tree.getParent(element.category_id).results[0]).to.deep.equal(parent); 
+        let elements = tree.all.slice(0,100).forEach(el => {
+            if (el.depth === 0) return;
+            expect(tree.getParent(el).results[0].category_id).to.be.equal(el.parent_id);
+        }); 
+    }); 
+
+    it('get all parents', function() {
+        parentsChains.forEach(chain => {
+            chain.forEach((el,index) => {
+                if (index === 0) return; //root element
+                let parents = chain.slice(0, index+1);
+                expect(tree.getAllParents(el).results).to.deep.equal(parents);
+            });
+        });
+    });
 }); 

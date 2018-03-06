@@ -66,6 +66,12 @@ module.exports = class NestedSets {
         this.results = [];
         this._keys = Object.assign(this._keys, keys);
     }
+    get all() {
+        return this._tree;
+    }
+    get allIds() {
+        return _.map(this._tree, this._keys.id);
+    }
     get keys() {
         return this._keys;
     }
@@ -211,19 +217,23 @@ module.exports = class NestedSets {
             throw new errors_1.NestedSetsValidationError('keys error!');
         }
     }
-    getChilds(el, hide) {
-        let id;
+    _normalizeElement(el) {
         let element;
         if (typeof el === "string" || typeof el === "number") {
-            id = el;
-            element = this._getElById(id);
+            element = this._getElById(el);
         }
         else {
-            id = el[this._keys.id];
             element = el;
         }
+        if (!element)
+            throw new errors_1.NestedSetsError('incorrect element!');
+        return element;
+    }
+    getChilds(el, hide) {
+        let element = this._normalizeElement(el);
+        let id = element[this._keys.id];
         let results = [];
-        if ((el[this._keys.rgt] - el[this._keys.lft] === 1)) {
+        if ((element[this._keys.rgt] - element[this._keys.lft] === 1)) {
             this.results = [];
             return this;
         }
@@ -238,5 +248,70 @@ module.exports = class NestedSets {
         this.results = _.sortBy(results, [this._keys.lft]);
         return this;
     }
+    isValidId(id) {
+        let el = this._getElById(id);
+        return !!el;
+    }
+    getAllChilds(el, hide) {
+        let element = this._normalizeElement(el);
+        let lft = element[this._keys.lft];
+        let rgt = element[this._keys.rgt];
+        let results = [];
+        if ((element[this._keys.rgt] - element[this._keys.lft] === 1)) {
+            this.results = [];
+            return this;
+        }
+        this._tree.forEach(el => {
+            if (!hide && el[this._keys.lft] >= lft && el[this._keys.rgt] <= rgt) {
+                results.push(el);
+            }
+            if (hide && !el[this._keys.hide] && el[this._keys.lft] >= lft && el[this._keys.rgt] <= rgt) {
+                results.push(el);
+            }
+        });
+        this.results = _.sortBy(results, [this._keys.lft]);
+        return this;
+    }
+    getDepth() {
+        let depth = 0;
+        this._tree.forEach(el => {
+            if (el[this._keys.lvl] > depth) {
+                depth = el[this._keys.lvl];
+            }
+        });
+        return depth;
+    }
+    getParent(el) {
+        let element = this._normalizeElement(el);
+        let parentId = element[this._keys.parentId];
+        let depth = element[this._keys.lvl];
+        let results = [];
+        if (!depth) {
+            results = [];
+        }
+        else {
+            let parent = this._getElById(parentId);
+            results.push(parent);
+        }
+        this.results = results;
+        return this;
+    }
+    getAllParents(el, hide) {
+        let element = this._normalizeElement(el);
+        let lft = element[this._keys.lft];
+        let rgt = element[this._keys.rgt];
+        let results = [];
+        this._tree.forEach(el => {
+            if (!hide && el[this._keys.lft] <= lft && el[this._keys.rgt] >= rgt) {
+                results.push(el);
+            }
+            if (hide && !el[this._keys.hide] && el[this._keys.lft] <= lft && el[this._keys.rgt] > rgt) {
+                results.push(el);
+            }
+        });
+        this.results = _.sortBy(results, this._keys.lvl);
+        return this;
+    }
+    ;
 };
 //# sourceMappingURL=tree.js.map
