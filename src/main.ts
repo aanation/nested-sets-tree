@@ -3,16 +3,26 @@ import {NestedSetsError, NestedSetsValidationError} from "./errors";
 import binarySearch from './binarysearch';
 
 
-
 export interface CollectionEl {
     [key:string]: number; 
 };
-
 export interface ExtremumResult {
     index: number, 
     value: number,
     el: CollectionEl
 }; 
+export interface Keys {
+    id?: string,
+    lvl?: string, 
+    parentId?: string,
+    lft?: string, 
+    rgt?: string, 
+    hide?: string
+}; 
+export interface IndexedTree {
+    id?:CollectionEl[]
+};
+export type stringOrNumberType = number | string;
 
 
 function getMinElByField(collection:CollectionEl[], field:string) :ExtremumResult {
@@ -57,26 +67,10 @@ function getMaxElByField(collection:CollectionEl[], field:string) :ExtremumResul
             }; 
         }
     });
-
     return max; 
 }; 
 
-export interface Keys {
-    id?: string,
-    lvl?: string, 
-    parentId?: string,
-    lft?: string, 
-    rgt?: string, 
-    hide?: string
-}; 
-
-export interface IndexedTree {
-    id?:CollectionEl[]
-};
-
-export type stringOrNumberType = number | string;
-
-module.exports = class NestedSets {
+export default class NestedSets {
     private _tree: CollectionEl[] = [];
     get all():CollectionEl[] {
         return this._tree;
@@ -136,13 +130,13 @@ module.exports = class NestedSets {
         
         tree.forEach(el => {
             if ((typeof el[keys.id]       !== 'number'  &&
-                 typeof el[keys.id]       !== 'string') ||
-                 typeof el[keys.hide]     !== 'boolean' ||
-                 typeof el[keys.lvl]      !== 'number'  ||
+                    typeof el[keys.id]       !== 'string') ||
+                    typeof el[keys.hide]     !== 'boolean' ||
+                    typeof el[keys.lvl]      !== 'number'  ||
                 (typeof el[keys.parentId] !== 'number'  &&
-                 typeof el[keys.parentId] !== 'string') ||
-                 typeof el[keys.lft]      !== 'number'  ||
-                 typeof el[keys.rgt]      !== 'number') {
+                    typeof el[keys.parentId] !== 'string') ||
+                    typeof el[keys.lft]      !== 'number'  ||
+                    typeof el[keys.rgt]      !== 'number') {
                 throw new NestedSetsValidationError('keys error!'); 
             }
 
@@ -158,7 +152,7 @@ module.exports = class NestedSets {
 
             if ( !((el[keys.rgt] - el[keys.lft]) & 1) ) {
                 throw new NestedSetsValidationError('the difference between the right and\
-                 left index must be an odd number!'); 
+                    left index must be an odd number!'); 
             }
 
             if (el[keys.lvl] & 1)  {
@@ -237,36 +231,36 @@ module.exports = class NestedSets {
 
     public getRootEl() {
         let results:CollectionEl[] = []; 
-		for (let i = 0; i < this._tree.length; i++) {
-			let el:CollectionEl = this._tree[i];
-			if (el[this._keys.lvl] !== 0) continue; 
-			results.push(el); 
-			break;
-		} 
-		this.results = results;
-		return this; 
+        for (let i = 0; i < this._tree.length; i++) {
+            let el:CollectionEl = this._tree[i];
+            if (el[this._keys.lvl] !== 0) continue; 
+            results.push(el); 
+            break;
+        } 
+        this.results = results;
+        return this; 
     }
     //статическая версия метода проверки на потомка без загрузки дерева
     static isChild(parent:CollectionEl, child:CollectionEl, {lft, rgt}:Keys) :boolean {
-		return child[lft] > parent[lft] && 
-			child[rgt] < parent[rgt];		
+        return child[lft] > parent[lft] && 
+            child[rgt] < parent[rgt];		
     }
 
     public isChild(parent: CollectionEl, child: CollectionEl) :boolean {
-		return child[this._keys.lft] > parent[this._keys.lft] && 
-			child[this._keys.rgt] < parent[this._keys.rgt];
+        return child[this._keys.lft] > parent[this._keys.lft] && 
+            child[this._keys.rgt] < parent[this._keys.rgt];
     }
     
-	public checkKeys(el) {
+    public checkKeys(el) {
         let keys:Keys = this._keys; 
         if ((typeof el[keys.id]       !== 'number'  &&
-             typeof el[keys.id]       !== 'string') ||
-             typeof el[keys.lvl]      !== 'number'  ||
-             typeof el[keys.hide]     !== 'boolean' ||
+                typeof el[keys.id]       !== 'string') ||
+                typeof el[keys.lvl]      !== 'number'  ||
+                typeof el[keys.hide]     !== 'boolean' ||
             (typeof el[keys.parentId] !== 'number'  &&
-             typeof el[keys.parentId] !== 'string') ||
-             typeof el[keys.lft]      !== 'number'  ||
-             typeof el[keys.rgt]      !== 'number') {
+                typeof el[keys.parentId] !== 'string') ||
+                typeof el[keys.lft]      !== 'number'  ||
+                typeof el[keys.rgt]      !== 'number') {
 
             throw new NestedSetsValidationError('keys error!'); 
         }
@@ -286,27 +280,27 @@ module.exports = class NestedSets {
     public getChilds(el:stringOrNumberType|CollectionEl, hide:boolean):NestedSets {
         let element:CollectionEl = this._normalizeElement(el); 
         let id:stringOrNumberType = element[this._keys.id]; 
-		let results:CollectionEl[] = []; 
-		//если у элемента правый ключ минус левый равен единицы - значит у него точно нет потомков 
-		//и проходка по дереву не имеет смысла 
-		if ((element[this._keys.rgt] - element[this._keys.lft] === 1)) {
-			this.results = [];
-			return this;  
+        let results:CollectionEl[] = []; 
+        //если у элемента правый ключ минус левый равен единицы - значит у него точно нет потомков 
+        //и проходка по дереву не имеет смысла 
+        if ((element[this._keys.rgt] - element[this._keys.lft] === 1)) {
+            this.results = [];
+            return this;  
         }
         
-		this._tree.forEach(el => {
+        this._tree.forEach(el => {
             //если исключать элементы нет нужды - проверяем parentKey
             if (!hide && el[this._keys.parentId] === id) {
                 results.push(el);
             }
             //если исключать элементы есть необходимость, но данный элемент не отмечен флагом hide - включаем его в массив резудбьтатов
-			if (hide && !el[this._keys.hide] && el[this._keys.parentId] === id) {
-				results.push(el); 
-			}
-		});
+            if (hide && !el[this._keys.hide] && el[this._keys.parentId] === id) {
+                results.push(el); 
+            }
+        });
 
-		this.results = _.sortBy(results, [this._keys.lft]);
-		return this; 
+        this.results = _.sortBy(results, [this._keys.lft]);
+        return this; 
     }
 
     public isValidId(id:string|number):boolean {
@@ -318,33 +312,33 @@ module.exports = class NestedSets {
         let element:CollectionEl = this._normalizeElement(el); 
         let lft:number = element[this._keys.lft];
         let rgt:number = element[this._keys.rgt]; 
-		let results:CollectionEl[] = []; 
-		//если у элемента правый ключ минус левый равен единицы - значит у него точно нет потомков 
-		//и проходка по дереву не имеет смысла 
-		if ((element[this._keys.rgt] - element[this._keys.lft] === 1)) {
-			this.results = [];
-			return this;  
+        let results:CollectionEl[] = []; 
+        //если у элемента правый ключ минус левый равен единицы - значит у него точно нет потомков 
+        //и проходка по дереву не имеет смысла 
+        if ((element[this._keys.rgt] - element[this._keys.lft] === 1)) {
+            this.results = [];
+            return this;  
         }     
 
         this._tree.forEach(el => {
-			if (!hide && el[this._keys.lft] >= lft && el[this._keys.rgt] <= rgt) {
-				results.push(el);
-			}
-			if (hide && !el[this._keys.hide] && el[this._keys.lft] >= lft && el[this._keys.rgt] <= rgt) {
-				results.push(el); 
-			}	            
+            if (!hide && el[this._keys.lft] >= lft && el[this._keys.rgt] <= rgt) {
+                results.push(el);
+            }
+            if (hide && !el[this._keys.hide] && el[this._keys.lft] >= lft && el[this._keys.rgt] <= rgt) {
+                results.push(el); 
+            }	            
         }); 
 
-		this.results = _.sortBy(results, [this._keys.lft]);
-		return this; 
+        this.results = _.sortBy(results, [this._keys.lft]);
+        return this; 
     }
 
     public getDepth():number {
         let depth:number = 0; 
         this._tree.forEach(el => {
             if (el[this._keys.lvl] > depth) {
-				depth = el[this._keys.lvl];
-			}
+                depth = el[this._keys.lvl];
+            }
         });
         return depth;
     }
@@ -369,23 +363,33 @@ module.exports = class NestedSets {
         let element:CollectionEl = this._normalizeElement(el); 
         let lft = element[this._keys.lft];
         let rgt = element[this._keys.rgt]; 
-		let results:CollectionEl[] = []; 
+        let results:CollectionEl[] = []; 
 
         this._tree.forEach(el => {
-			if (!hide && el[this._keys.lft] <= lft && el[this._keys.rgt] >= rgt) {
-				results.push(el);
-			}
+            if (!hide && el[this._keys.lft] <= lft && el[this._keys.rgt] >= rgt) {
+                results.push(el);
+            }
 
-			if (hide && !el[this._keys.hide] && el[this._keys.lft] <= lft && el[this._keys.rgt] > rgt) {
-				results.push(el);
-			}			
-		});
+            if (hide && !el[this._keys.hide] && el[this._keys.lft] <= lft && el[this._keys.rgt] > rgt) {
+                results.push(el);
+            }			
+        });
         this.results = _.sortBy(results, this._keys.lvl);
         return this;
     }; 
-
-
-    
-
-
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

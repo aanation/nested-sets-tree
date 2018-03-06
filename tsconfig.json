@@ -1,15 +1,13 @@
 {
     "compilerOptions": {
-        "target": "ES2017",
+        "target": "ES2015",
         "module": "CommonJS",
         "removeComments": true, 
         "outDir": "dist",
-        "declaration": true,
-        "declarationDir": "types",
         "sourceMap": true
     }, 
     "files": [
-        "src/tree.ts"
+        "src/main.ts"
     ],
     "types" : ["lodash"],
     "compileOnSave": true
