@@ -1,4 +1,4 @@
-[{
+module.exports = [{
     "category_id": 6,
     "depth": 2,
     "lft": 1119,

@@ -1,17 +1,14 @@
 const NestedSets = require('../dist/tree');
-
-const assert = require('chai').assert;
-const expect = require('chai').expect; 
-const fs = require('fs'); 
-const path = require('path'); 
-const _ = require('lodash');
+const assert = require('../node_modules/chai').assert;
+const expect = require('../node_modules/chai').expect; 
+const _ = require('../node_modules/lodash');
 
 
 function randomInteger(min, max) {
     let rand = min - 0.5 + Math.random() * (max - min + 1)
     rand = Math.round(rand);
     return rand;
-}
+};
 
 
 describe('constructor', function() {
@@ -51,10 +48,10 @@ describe('constructor', function() {
     }); 
 }); 
 
-const treeData = JSON.parse(fs.readFileSync(path.resolve('./test/data/tree.json'))); 
-const rootCategoriesData = JSON.parse(fs.readFileSync(path.resolve('./test/data/root.json')));
-const childsData = JSON.parse(fs.readFileSync(path.resolve('./test/data/childs.json')));
-const parentsChains = JSON.parse(fs.readFileSync(path.resolve('./test/data/parentsChains.json')));
+const treeData = require('./data/tree.js'); 
+const rootCategoriesData = require('./data/root.js');
+const childsData = require('./data/childs.js');
+const parentsChains = require('./data/parentsChains.js');
 
 describe('loadTree', function() {
     let tree = new NestedSets({

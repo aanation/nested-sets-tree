@@ -1,4 +1,4 @@
-[
+module.exports = [
     [
         {
             "category_id": 1,
