@@ -9,8 +9,22 @@
     "test:karma": "node_modules/karma/bin/karma start",
     "build": "rollup -c"
   },
-  "author": "agris",
+  "author": "aanarion",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aanation/nested-sets-tree.git"
+  },
+  "keywords": [
+    "nested",
+    "sets",
+    "tree",
+    "typescript"
+  ],
+  "bugs": {
+    "url": "https://github.com/aanation/nested-sets-tree/issues"
+  },
+  "homepage": "https://github.com/aanation/nested-sets-tree#readme",  
   "dependencies": {
     "@types/lodash": "^4.14.104",
     "@types/node": "^9.4.6",
