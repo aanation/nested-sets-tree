@@ -1,13 +1,13 @@
 declare module 'nested-sets-tree' {
-	interface CollectionEl {
+	export interface CollectionEl {
 	    [key: string]: number;
 	}
-	interface ExtremumResult {
+	export interface ExtremumResult {
 	    index: number;
 	    value: number;
 	    el: CollectionEl;
 	}
-	interface Keys {
+	export interface Keys {
 	    id?: string;
 	    lvl?: string;
 	    parentId?: string;
@@ -15,10 +15,10 @@ declare module 'nested-sets-tree' {
 	    rgt?: string;
 	    hide?: string;
 	}
-	interface IndexedTree {
+	export interface IndexedTree {
 	    id?: CollectionEl[];
 	}
-	type stringOrNumberType = number | string;
+	export type stringOrNumberType = number | string;
 	export default class NestedSets {
 	    private _tree;
 	    all: CollectionEl[];
