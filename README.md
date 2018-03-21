@@ -1,15 +1,20 @@
 # NESTED SETS TREE 
 
-JS-модуль для работы с Nested Sets деревьями (получения элементов дерева).
-Работает как в браузере, так и на NodeJS. 
+It's a small module for getting elements of Nested Sets Tree. 
+It works both in browsers and NodeJS. Includes types definition for Typescript. 
 
-## Инициализация 
-При инициализации конструктору передается объект с названиями ключей в массиве
+## Installation 
 
+```npm install nested-sets-tree```
+
+## Initialization (create NestedSets instance)
+When initialized, you must define the keys used in your nested sets tree array: 
+
+Javascript:
 ```javascript 
-const nestedTree = require('nested-sets-tree');
+const NestedSets = require('nested-sets-tree');
 
-let tree = new nestedTree({
+const tree = new NestedSets({
     id: 'id',
     lvl: 'depth',
     parentId: 'parent_id', 
@@ -18,8 +23,27 @@ let tree = new nestedTree({
     hide: 'hide'
 }); 
 ```
-## Загрузка дерева 
 
+In typescript + es6 import + nodejs you should use ```"esModuleInterop": true``` option in your tsconfig.json. 
+
+Typescript:
+```typescript
+import NestedSets from 'nested-sets-tree'; 
+import {CollectionEl} from 'nested-sets-tree'; 
+
+const tree:NestedSets = new NestedSets({
+    id: 'id',
+    lvl: 'depth',
+    parentId: 'parent_id', 
+    lft: 'lft', 
+    rgt: 'rgt', 
+    hide: 'hide'
+});
+```
+
+## Load tree
+
+Javascript:
 ```javascript 
 let array = [
     {
@@ -30,52 +54,171 @@ let array = [
     }//...
 ];
 
-tree.loadTree(array);
+tree.loadTree(array, {});
 ```
-При загрузке данных вместе с самим деревом можно передать объект опций:
 
-**validate** true/false - валидировать ли данные на соответствие формату данных nested sets (проверка индексов). По умолчанию false; 
+Typescript:
+```typescript
+let array:CollectionEl[] = [
+    {
+        id: 1, 
+        lvl: 0, 
+        parent_id: 0
+        //...
+    }//...
+];
 
-**createIndexes** true/false - создавать ли индексы для полей для ускорения поиска 
-По умолчанию false. 
+tree.loadTree(array, {});
+```
+You can set the options' object together with your tree array:
 
-**indexes** {} - объект с готовыми индексами. Можно передать уже сформирвоанный заранее массив индексов, отсортированных по определнными полям. 
+**validate** true/false - if true your tree is validated. By default is false. 
+
+**createIndexes** true/false - if true the indexes for quick binary search are created (recommended for huge amount of operations). By default false. 
+
+**indexes** {} - object includes ready-made indexes. Set it if you already have got sorted tree.   
 
 ```javascript
 tree.loadTree(array, {
-    lvl: [//...массив отсортированных элементов]
+    id: [] //nested sets tree array sorted by id 
 });
 ```
-## Поиск по дереву 
+
+
+## Search
 
 ```javascript 
-tree.getChilds(5).ids; //получение id всех прямых потомков элемента с id 5 
-tree.getChilds(5).results; //получение самих элементов потомков 
-tree.getChilds(5, true).resutls; //поиск прямых потомков за вычетом тех, что отмечены флагом hide
+tree.getChilds(5).ids; 
+tree.getChilds(5).results; 
+tree.getChilds(5, true).resutls; 
+tree.getAllChilds(5).results; 
+tree.getChilds({
+    id: 1, 
+    lvl: 0, 
+    parent_id: 0
+    lft: 1,
+    rgt: 20, 
+    name: 'parent element'
+    hide: false
+}).results;
+
 ```
-## Методы поиска 
 
-Все методы для получения выборки из дерева могут принимать как ID элемента, так и сам элемент 
+## Hidden elements 
 
-**getChilds(elementId)** - получить только потомков первого уровня
+If you want to exclude some element's in search results, you should use ```hide: true``` flag in element:
 
-**getAllChilds(elementId)** - получить всех потомков
+```javascript
+const NestedSets = require('nested-sets-tree');
 
-**getDepth()** - получить глубину дерева
+const tree = new NestedSets({
+    id: 'id',
+    lvl: 'lvl',
+    parentId: 'parent_id', 
+    lft: 'lft', 
+    rgt: 'rgt', 
+    hide: 'hide'
+}); 
 
-**getParent(elemenId)** - получить прямого предка элемента
+const treeArray = [
+    {
+        id: 1, 
+        lvl: 0, 
+        parent_id: 0
+        lft: 1,
+        rgt: 20, 
+        name: 'parent element'
+        hide: false
+    }, 
+    {
+        id: 2, 
+        lvl: 1, 
+        parent_id: 1, 
+        lft: 2,
+        rgt: 3,
+        hide: false, 
+        name: 'first child'
+    }, 
+    //exclude second element
+    {
+        id: 3,
+        lvl: 1, 
+        parent_id: 1, 
+        lft: 4,
+        rgt: 5,
+        hide: true,
+        name: 'second'
+    },
+    //...
+]; 
 
-**getAllParents(elementId)** - получить цепочку предков элемента вплоть до корня
+tree.loadTree(treeArray);
+//get all childs exclude second element
+let childsWithoutHidden = tree.getAllChilds(1, true).results; 
+//get all childs, ignore hide flag 
+let childs = tree.getAllChilds(1).results; 
 
-**getRootCats()** - получает узлы первого уровня (прямые потомки корня) дерева
+``` 
 
-**getRootEl()** - получает непосредственно корневой элемент дерева
+in search method:
+```javascript
+let childs = tree
 
-**isChild(parent, child)** - проверяет является ли элемент child потомком элемента parent
+```
 
-**getElById(elId)** - получает элемент по его ID
 
-**isValidId(elId)** - возвращает булево значение. Проверяет, существует ли в дереве элемент с данным ID 
+
+## Search methods
+
+All methods are effective for taking both element's ID and element itself. 
+All methods returns the NestedSets instance. 
+
+
+1) get childs of root element:
+```typescript
+getRootCats(): NestedSets;
+```
+
+2) get root element
+```typescript
+getRootEl(): NestedSets;
+```
+
+3) check child element:
+```typescript
+static isChild(parent: CollectionEl, child: CollectionEl, {lft, rgt}: Keys): boolean;
+```
+
+4) get childs (with el):
+```typescript
+getChilds(el: stringOrNumberType | CollectionEl, hide: boolean): NestedSets;
+```
+
+5) is valid id:
+```typescript
+isValidId(id: string | number): boolean;
+```
+
+6) get all childs:
+```typescript
+getAllChilds(el: stringOrNumberType | CollectionEl, hide: boolean): NestedSets;
+```
+
+7) get depth of tree:
+```typescript
+getDepth(): number;
+```
+
+8) get parent of element:
+```typescript
+getParent(el: stringOrNumberType | CollectionEl): NestedSets;
+```
+
+9) get all parents chain:
+```typescript
+getAllParents(el: stringOrNumberType | CollectionEl, hide: boolean): NestedSets;
+```
+
 
 
 
