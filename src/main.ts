@@ -379,6 +379,7 @@ export default class NestedSets {
     }; 
 };
 
+exports.default = NestedSets;
 
 
 

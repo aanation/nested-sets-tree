@@ -16,7 +16,7 @@ module.exports = function (config) {
 		},
 		reporters: ['mocha', 'spec', 'coverage'],
 		coverageReporter: {
-			dir: 'build/coverage/',
+			dir: 'coverage/',
 			reporters: [
 				{ type: 'html' },
 				{ type: 'text' },

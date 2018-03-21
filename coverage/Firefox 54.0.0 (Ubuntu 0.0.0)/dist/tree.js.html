@@ -25,9 +25,9 @@
         <span class='fraction'>197/230</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">73.18% </span>
+        <span class="strong">73.74% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>131/179</span>
+        <span class='fraction'>132/179</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">91.49% </span>
@@ -896,31 +896,31 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">7×</span>
 <span class="cline-any cline-yes">7×</span>
-<span class="cline-any cline-yes">7344×</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7344×</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7343×</span>
+<span class="cline-any cline-yes">7286×</span>
 <span class="cline-any cline-yes">2×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7341×</span>
+<span class="cline-any cline-yes">7284×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7284×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7283×</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7341×</span>
-<span class="cline-any cline-yes">3103×</span>
+<span class="cline-any cline-yes">7283×</span>
+<span class="cline-any cline-yes">3280×</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7341×</span>
-<span class="cline-any cline-yes">4238×</span>
+<span class="cline-any cline-yes">7283×</span>
+<span class="cline-any cline-yes">4003×</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7341×</span>
-<span class="cline-any cline-yes">7341×</span>
+<span class="cline-any cline-yes">7283×</span>
+<span class="cline-any cline-yes">7283×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4×</span>
 <span class="cline-any cline-yes">87588×</span>
@@ -1352,11 +1352,11 @@ var NestedSets = function () {
         value: function validateTree(tree, keys) {
             var lftrgt = [];
             tree.forEach(function (el) {
-                <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof el[keys.id] !== 'number' &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >typeof el[keys.id] !== 'string' </span>|| typeof el[keys.hide] !== 'boolean' || typeof el[keys.lvl] !== 'number' || typeof el[keys.parentId] !== 'number' &amp;&amp; <span class="branch-5 cbranch-no" title="branch not covered" >typeof el[keys.parentId] !== 'string' </span>|| typeof el[keys.lft] !== 'number' || typeof el[keys.rgt] !== 'number') {
-<span class="cstat-no" title="statement not covered" >                    throw new NestedSetsValidationError('keys error!');</span>
+                if (typeof el[keys.id] !== 'number' &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >typeof el[keys.id] !== 'string' </span>|| typeof el[keys.hide] !== 'boolean' || typeof el[keys.lvl] !== 'number' || typeof el[keys.parentId] !== 'number' &amp;&amp; typeof el[keys.parentId] !== 'string' || typeof el[keys.lft] !== 'number' || typeof el[keys.rgt] !== 'number') {
+                    throw new NestedSetsValidationError('keys error!');
                 }
-                if (!Number.isInteger(el[keys.lvl]) || el[keys.lvl] &lt; 0 || !Number.isInteger(el[keys.lft]) || el[keys.lft] &lt;= 0 || !Number.isInteger(el[keys.rgt]) || el[keys.rgt] &lt;= 0) {
-                    throw new NestedSetsValidationError('lvl, rgt, lft keys must be natural numbers!');
+                <span class="missing-if-branch" title="if path not taken" >I</span>if (!Number.isInteger(el[keys.lvl]) || el[keys.lvl] &lt; 0 || !Number.isInteger(el[keys.lft]) || el[keys.lft] &lt;= 0 || !Number.isInteger(el[keys.rgt]) || el[keys.rgt] &lt;= 0) {
+<span class="cstat-no" title="statement not covered" >                    throw new NestedSetsValidationError('lvl, rgt, lft keys must be natural numbers!');</span>
                 }
                 if (el[keys.lft] &gt;= el[keys.rgt]) {
                     throw new NestedSetsValidationError('every rgt key of element must be more than lft key!');
@@ -1417,7 +1417,7 @@ module.exports = NestedSets;
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Mar 07 2018 20:33:00 GMT+0700 (+07)
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Mar 21 2018 23:18:30 GMT+0700 (+07)
 </div>
 </div>
 <script src="../prettify.js"></script>

@@ -451,6 +451,7 @@ var NestedSets = function () {
     }]);
     return NestedSets;
 }();
+exports.default = NestedSets;
 
 module.exports = NestedSets;
 //# sourceMappingURL=tree.js.map
